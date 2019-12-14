@@ -1,0 +1,59 @@
+<html>
+    <body>
+        <script>
+            /*  Falicornia attacks with 100 H, 101 E, 20 AT, 5 SG   */
+            const f_attack = {h:100, e:101, at:20, sg:5};
+            /* */
+            const lengaburu = {h:100, e:50, at:10, sg:5};
+            const falicornia = {h:300, e:200, at:40, sg:20};
+            const l_attack = {h:0, e:0, at:0, sg:0};
+            let status = '';
+            let f_reverse_array = [];
+            let pending_amount = {h:0, e:0, at:0, sg:0};
+            for( let key in f_attack) {
+                f_reverse_array.push(key);
+            }
+            f_reverse_array = f_reverse_array.reverse();
+            f_reverse_array.forEach(item => {
+                if(lengaburu[item]*2 >= f_attack[item]) {
+                    l_attack[item] = Math.ceil(f_attack[item]/2);
+                    lengaburu[item] = lengaburu[item] - l_attack[item];
+                }else if(lengaburu[item]*2 < f_attack[item]) {
+                    pending_amount[item] = Math.ceil((f_attack[item] - Math.ceil(lengaburu[item]*2)) / 2); 
+                    l_attack[item] = lengaburu[item];
+                    lengaburu[item] = 0;
+                }
+            });
+            f_reverse_array.forEach((item, index) => {
+                const count = index + 1;
+                if(pending_amount[item] !== 0) {
+                    let arr_count = 1;
+                  for( let i = count; i<4; i++ ) {
+                      if(pending_amount[item]*arr_count*2 <= lengaburu[f_reverse_array[i]] ) {
+                            l_attack[f_reverse_array[i]] = l_attack[f_reverse_array[i]] + pending_amount[item] * arr_count *2;
+                            lengaburu[f_reverse_array[i]] = lengaburu[f_reverse_array[i]] - pending_amount[item] * arr_count *2;
+                            pending_amount[item] = 0;
+                            break; 
+                      } else if(pending_amount[item]*arr_count*2 > lengaburu[f_reverse_array[i]]) {
+                            l_attack[f_reverse_array[i]] = l_attack[f_reverse_array[i]] + lengaburu[f_reverse_array[i]];
+                            pending_amount[item] = (pending_amount[item]*arr_count * 2 - lengaburu[f_reverse_array[i]])/(arr_count *2);
+                            lengaburu[f_reverse_array[i]] = 0;;
+                      }
+                      arr_count = arr_count + 1;
+                  }
+
+                }
+            })
+
+            for( let key in pending_amount) {
+                if(pending_amount[key] > 0) {
+                    status = 'loses';
+                    break;
+                } else {
+                    status = 'wins'
+                }
+            }
+            console.log(l_attack.h + ' H ' + l_attack.e + ' E ' + l_attack.at +' AT ' + l_attack.sg + ' SG and ' + status)
+        </script>
+    </body>
+</html>
